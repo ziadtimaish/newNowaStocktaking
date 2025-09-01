@@ -1,0 +1,16 @@
+{
+    "version": "3.0.4",
+    "app": {
+        "name": "nowastocktaking",
+        "package_name": "com.example.nowastocktaking"
+    },
+    "main": [
+        {
+            "key": "supabase",
+            "statement": "await SupabaseService().initialize();",
+            "imports": [
+                "package:nowastocktaking/integrations/supabase_service.dart"
+            ]
+        }
+    ]
+}
