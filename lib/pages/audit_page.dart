@@ -73,8 +73,8 @@ class _AuditPageState extends State<AuditPage> {
     });
     try {
       List<StockTransactionModel> transactions = [];
-      if (sku != null && sku!.isNotEmpty) {
-        transactions = await SupabaseService().getStockTransactionsBySku(sku!);
+      if (sku != null && sku.isNotEmpty) {
+        transactions = await SupabaseService().getStockTransactionsBySku(sku);
       } else {
         transactions = await SupabaseService().getStockTransactionsByStockId(
           stockId,
@@ -262,13 +262,10 @@ class _AuditPageState extends State<AuditPage> {
   }
 
   String _getTransactionDescription(StockTransactionModel transaction) {
-    final quantityText = transaction.quantityAdded != null
-        ? '${transaction.quantityAdded! > 0 ? '+' : ''}${transaction.quantityAdded}'
-        : '0';
-    final totalText = transaction.totalQuantityAfter != null
-        ? ' (Total: ${transaction.totalQuantityAfter})'
-        : '';
-    return '${quantityText}${totalText}';
+    final quantityText =
+        transaction.quantityAdded != null ? '${transaction.quantityAdded! > 0 ? '+' : ''}${transaction.quantityAdded}' : '0';
+    final totalText = transaction.totalQuantityAfter != null ? ' (Total: ${transaction.totalQuantityAfter})' : '';
+    return '$quantityText$totalText';
   }
 
   String _formatDateTime(String? dateTime) {
@@ -276,7 +273,7 @@ class _AuditPageState extends State<AuditPage> {
       return 'Unknown';
     }
     try {
-      final dt = DateTime.parse(dateTime!);
+      final dt = DateTime.parse(dateTime);
       final now = DateTime.now();
       final difference = now.difference(dt);
       if (difference.inDays > 0) {
@@ -293,7 +290,7 @@ class _AuditPageState extends State<AuditPage> {
         }
       }
     } catch (e) {
-      return dateTime!.substring(0, 10);
+      return dateTime.substring(0, 10);
     }
   }
 
@@ -321,357 +318,346 @@ class _AuditPageState extends State<AuditPage> {
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : _errorMessage != null
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.error_outline,
-                      size: 64.0,
-                      color: Colors.red.shade300,
-                    ),
-                    const SizedBox(height: 16.0),
-                    Text(
-                      _errorMessage!,
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.grey.shade700,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 24.0),
-                    ElevatedButton(
-                      onPressed: _loadStocks,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade600,
-                        foregroundColor: Colors.white,
-                      ),
-                      child: const Text('Try Again'),
-                    ),
-                  ],
-                ),
-              )
-            : _stocks.isEmpty
-            ? Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.inventory_2_outlined,
-                      size: 64.0,
-                      color: Colors.grey.shade400,
-                    ),
-                    const SizedBox(height: 16.0),
-                    Text(
-                      'No Stock Items Found',
-                      style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade700,
-                      ),
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      'Add some stock items to start auditing',
-                      style: TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            : Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(20.0),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.blue.shade600, Colors.blue.shade800],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(16.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.blue.shade200,
-                            blurRadius: 10.0,
-                            offset: const Offset(0.0, 4.0),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Column(
-                            children: [
-                              const Icon(
-                                Icons.inventory_2,
-                                color: Colors.white,
-                                size: 32.0,
-                              ),
-                              const SizedBox(height: 8.0),
-                              Text(
-                                '${_stocks.length}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const Text(
-                                'Total Items',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 12.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            height: 40.0,
-                            width: 1.0,
-                            color: Colors.white30,
-                          ),
-                          Column(
-                            children: [
-                              const Icon(
-                                Icons.numbers,
-                                color: Colors.white,
-                                size: 32.0,
-                              ),
-                              const SizedBox(height: 8.0),
-                              Text(
-                                '${_stocks.where((stock) => stock.quantity != null).fold(0, (sum, stock) => sum + (stock.quantity ?? 0))}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const Text(
-                                'Total Quantity',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 12.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Container(
-                            height: 40.0,
-                            width: 1.0,
-                            color: Colors.white30,
-                          ),
-                          Column(
-                            children: [
-                              const Icon(
-                                Icons.category,
-                                color: Colors.white,
-                                size: 32.0,
-                              ),
-                              const SizedBox(height: 8.0),
-                              Text(
-                                '${_stocks.where((stock) => stock.category != null).map((stock) => stock.category).toSet().length}',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const Text(
-                                'Categories',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 12.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 24.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'Stock Items',
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey.shade800,
-                          ),
+                        Icon(
+                          Icons.error_outline,
+                          size: 64.0,
+                          color: Colors.red.shade300,
                         ),
+                        const SizedBox(height: 16.0),
                         Text(
-                          'Tap to view history',
+                          _errorMessage!,
                           style: TextStyle(
-                            fontSize: 12.0,
-                            color: Colors.grey.shade500,
-                            fontStyle: FontStyle.italic,
+                            fontSize: 16.0,
+                            color: Colors.grey.shade700,
                           ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 24.0),
+                        ElevatedButton(
+                          onPressed: _loadStocks,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade600,
+                            foregroundColor: Colors.white,
+                          ),
+                          child: const Text('Try Again'),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16.0),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: _stocks.length,
-                        itemBuilder: (context, index) {
-                          final stock = _stocks[index];
-                          final stockId = stock.stockId ?? '';
-                          final isExpanded = _expandedStocks.contains(stockId);
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 12.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.shade200,
-                                  blurRadius: 6.0,
-                                  offset: const Offset(0.0, 2.0),
-                                ),
-                              ],
+                  )
+                : _stocks.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.inventory_2_outlined,
+                              size: 64.0,
+                              color: Colors.grey.shade400,
                             ),
-                            child: Column(
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'No Stock Items Found',
+                              style: TextStyle(
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
+                            const SizedBox(height: 8.0),
+                            Text(
+                              'Add some stock items to start auditing',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(20.0),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [Colors.blue.shade600, Colors.blue.shade800],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(16.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.blue.shade200,
+                                    blurRadius: 10.0,
+                                    offset: const Offset(0.0, 4.0),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  Column(
+                                    children: [
+                                      const Icon(
+                                        Icons.inventory_2,
+                                        color: Colors.white,
+                                        size: 32.0,
+                                      ),
+                                      const SizedBox(height: 8.0),
+                                      Text(
+                                        '${_stocks.length}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24.0,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const Text(
+                                        'Total Items',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    height: 40.0,
+                                    width: 1.0,
+                                    color: Colors.white30,
+                                  ),
+                                  Column(
+                                    children: [
+                                      const Icon(
+                                        Icons.numbers,
+                                        color: Colors.white,
+                                        size: 32.0,
+                                      ),
+                                      const SizedBox(height: 8.0),
+                                      Text(
+                                        '${_stocks.where((stock) => stock.quantity != null).fold(0, (sum, stock) => sum + (stock.quantity ?? 0))}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24.0,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const Text(
+                                        'Total Quantity',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Container(
+                                    height: 40.0,
+                                    width: 1.0,
+                                    color: Colors.white30,
+                                  ),
+                                  Column(
+                                    children: [
+                                      const Icon(
+                                        Icons.category,
+                                        color: Colors.white,
+                                        size: 32.0,
+                                      ),
+                                      const SizedBox(height: 8.0),
+                                      Text(
+                                        '${_stocks.where((stock) => stock.category != null).map((stock) => stock.category).toSet().length}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 24.0,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const Text(
+                                        'Categories',
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 24.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                ListTile(
-                                  onTap: () =>
-                                      _toggleStockExpansion(stockId, stock.sku),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16.0,
-                                    vertical: 12.0,
-                                  ),
-                                  leading: Container(
-                                    width: 50.0,
-                                    height: 50.0,
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue.shade50,
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    child: Icon(
-                                      Icons.inventory_2,
-                                      color: Colors.blue.shade600,
-                                      size: 28.0,
-                                    ),
-                                  ),
-                                  title: Text(
-                                    stock.name ?? 'Unnamed Item',
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16.0,
-                                    ),
-                                  ),
-                                  subtitle: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      if (stock.sku != null) ...[
-                                        const SizedBox(height: 4.0),
-                                        Text(
-                                          'SKU: ${stock.sku}',
-                                          style: TextStyle(
-                                            color: Colors.grey.shade600,
-                                            fontSize: 12.0,
-                                          ),
-                                        ),
-                                      ],
-                                      if (stock.category != null) ...[
-                                        const SizedBox(height: 2.0),
-                                        Text(
-                                          stock.category!,
-                                          style: TextStyle(
-                                            color: Colors.blue.shade600,
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                      if (stock.location != null) ...[
-                                        const SizedBox(height: 2.0),
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.location_on,
-                                              size: 12.0,
-                                              color: Colors.grey.shade500,
-                                            ),
-                                            const SizedBox(width: 4.0),
-                                            Text(
-                                              stock.location!,
-                                              style: TextStyle(
-                                                color: Colors.grey.shade600,
-                                                fontSize: 12.0,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ],
-                                  ),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8.0,
-                                          vertical: 4.0,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              stock.quantity != null &&
-                                                  stock.quantity! > 0
-                                              ? Colors.green.shade50
-                                              : Colors.red.shade50,
-                                          borderRadius: BorderRadius.circular(
-                                            8.0,
-                                          ),
-                                          border: Border.all(
-                                            color:
-                                                stock.quantity != null &&
-                                                    stock.quantity! > 0
-                                                ? Colors.green.shade200
-                                                : Colors.red.shade200,
-                                          ),
-                                        ),
-                                        child: Text(
-                                          stock.quantity?.toString() ?? '0',
-                                          style: TextStyle(
-                                            color:
-                                                stock.quantity != null &&
-                                                    stock.quantity! > 0
-                                                ? Colors.green.shade700
-                                                : Colors.red.shade700,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14.0,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 8.0),
-                                      Icon(
-                                        isExpanded
-                                            ? Icons.expand_less
-                                            : Icons.expand_more,
-                                        color: Colors.grey.shade600,
-                                      ),
-                                    ],
+                                Text(
+                                  'Stock Items',
+                                  style: TextStyle(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey.shade800,
                                   ),
                                 ),
-                                if (isExpanded)
-                                  _buildTransactionHistory(stockId),
+                                Text(
+                                  'Tap to view history',
+                                  style: TextStyle(
+                                    fontSize: 12.0,
+                                    color: Colors.grey.shade500,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
                               ],
                             ),
-                          );
-                        },
+                            const SizedBox(height: 16.0),
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: _stocks.length,
+                                itemBuilder: (context, index) {
+                                  final stock = _stocks[index];
+                                  final stockId = stock.stockId ?? '';
+                                  final isExpanded = _expandedStocks.contains(stockId);
+                                  return Container(
+                                    margin: const EdgeInsets.only(bottom: 12.0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(12.0),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.grey.shade200,
+                                          blurRadius: 6.0,
+                                          offset: const Offset(0.0, 2.0),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        ListTile(
+                                          onTap: () => _toggleStockExpansion(stockId, stock.sku),
+                                          contentPadding: const EdgeInsets.symmetric(
+                                            horizontal: 16.0,
+                                            vertical: 12.0,
+                                          ),
+                                          leading: Container(
+                                            width: 50.0,
+                                            height: 50.0,
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue.shade50,
+                                              borderRadius: BorderRadius.circular(10.0),
+                                            ),
+                                            child: Icon(
+                                              Icons.inventory_2,
+                                              color: Colors.blue.shade600,
+                                              size: 28.0,
+                                            ),
+                                          ),
+                                          title: Text(
+                                            stock.name ?? 'Unnamed Item',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 16.0,
+                                            ),
+                                          ),
+                                          subtitle: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              if (stock.sku != null) ...[
+                                                const SizedBox(height: 4.0),
+                                                Text(
+                                                  'SKU: ${stock.sku}',
+                                                  style: TextStyle(
+                                                    color: Colors.grey.shade600,
+                                                    fontSize: 12.0,
+                                                  ),
+                                                ),
+                                              ],
+                                              if (stock.category != null) ...[
+                                                const SizedBox(height: 2.0),
+                                                Text(
+                                                  stock.category!,
+                                                  style: TextStyle(
+                                                    color: Colors.blue.shade600,
+                                                    fontSize: 12.0,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ],
+                                              if (stock.location != null) ...[
+                                                const SizedBox(height: 2.0),
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.location_on,
+                                                      size: 12.0,
+                                                      color: Colors.grey.shade500,
+                                                    ),
+                                                    const SizedBox(width: 4.0),
+                                                    Text(
+                                                      stock.location!,
+                                                      style: TextStyle(
+                                                        color: Colors.grey.shade600,
+                                                        fontSize: 12.0,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            ],
+                                          ),
+                                          trailing: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(
+                                                  horizontal: 8.0,
+                                                  vertical: 4.0,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: stock.quantity != null && stock.quantity! > 0
+                                                      ? Colors.green.shade50
+                                                      : Colors.red.shade50,
+                                                  borderRadius: BorderRadius.circular(
+                                                    8.0,
+                                                  ),
+                                                  border: Border.all(
+                                                    color: stock.quantity != null && stock.quantity! > 0
+                                                        ? Colors.green.shade200
+                                                        : Colors.red.shade200,
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  stock.quantity?.toString() ?? '0',
+                                                  style: TextStyle(
+                                                    color: stock.quantity != null && stock.quantity! > 0
+                                                        ? Colors.green.shade700
+                                                        : Colors.red.shade700,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14.0,
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 8.0),
+                                              Icon(
+                                                isExpanded ? Icons.expand_less : Icons.expand_more,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        if (isExpanded) _buildTransactionHistory(stockId),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
       ),
     );
   }

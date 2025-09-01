@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nowa_runtime/nowa_runtime.dart';
-import 'package:elite_stocktaking/models/stock_model.dart';
-import 'package:elite_stocktaking/integrations/supabase_service.dart';
-import 'package:elite_stocktaking/models/stock_transaction_model.dart';
-import 'package:elite_stocktaking/components/barcode_scanner_service.dart';
+import 'package:nowastocktaking/components/barcode_scanner_service.dart';
+import 'package:nowastocktaking/integrations/supabase_service.dart';
+import 'package:nowastocktaking/models/stock_model.dart';
+import 'package:nowastocktaking/models/stock_transaction_model.dart';
 
 @NowaGenerated()
 class AddStockPage extends StatefulWidget {

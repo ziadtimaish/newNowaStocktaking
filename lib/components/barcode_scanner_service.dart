@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nowastocktaking/integrations/supabase_service.dart';
+import 'package:nowastocktaking/models/stock_model.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
-import 'package:elite_stocktaking/models/stock_model.dart';
-import 'package:elite_stocktaking/integrations/supabase_service.dart';
 
 class BarcodeScannerService {
   static Future<String?> scanBarcode(BuildContext context) async {

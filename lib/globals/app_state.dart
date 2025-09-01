@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nowa_runtime/nowa_runtime.dart';
+import 'package:nowastocktaking/globals/themes.dart';
 import 'package:provider/provider.dart';
-import 'package:elite_stocktaking/globals/themes.dart';
 
 @NowaGenerated()
 class AppState extends ChangeNotifier {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nowa_runtime/nowa_runtime.dart';
 import 'package:nowastocktaking/pages/sign_up_page.dart';
 import 'package:nowastocktaking/integrations/supabase_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 @NowaGenerated()
 class SignInPage extends StatefulWidget {
@@ -276,9 +277,8 @@ class _SignInPageState extends State<SignInPage> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = e.toString().contains('Invalid login credentials')
-              ? 'Invalid email or password'
-              : 'An error occurred. Please try again.';
+          _errorMessage =
+              e.toString().contains('Invalid login credentials') ? 'Invalid email or password' : 'An error occurred. Please try again.';
         });
       }
     } finally {
